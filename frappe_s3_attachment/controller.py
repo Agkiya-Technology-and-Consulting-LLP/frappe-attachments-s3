@@ -107,11 +107,8 @@ class S3Operations(object):
         Uploads a new file to S3.
         Strips the file extension to set the content_type in metadata.
         """
-        print(file_path,"===================")
         mime_type = magic.from_file(file_path, mime=True)
-        print(mime_type)
         key = self.key_generator(file_name, parent_doctype, parent_name)
-        print(key,"keykeykeykeykeykeykeykey")
         content_type = mime_type
         try:
             if is_private:
@@ -218,12 +215,7 @@ def file_upload_to_s3(doc, method):
         if not doc.is_private:
             file_path = site_path + '/public' + path
         else:
-            print(site_path,"file_pathfile_pathfile_pathfile_pathfile_path")
-            print(path,"pathpathpathpathpathpathpath")
-            if path:
-                file_path = site_path + path
-            else:
-                file_path = site_path
+            file_path = site_path + path
         key = s3_upload.upload_files_to_s3_with_key(
             file_path, doc.file_name,
             doc.is_private, parent_doctype,
