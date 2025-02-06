@@ -232,9 +232,14 @@ def file_upload_to_s3(doc, method):
                 key
             )
         os.remove(file_path)
+        folder = ""
+        if doc.folder:
+            folder = doc.folder
+        else:
+            folder = "Home/Attachments"
         frappe.db.sql("""UPDATE `tabFile` SET file_url=%s, folder=%s,
             old_parent=%s, content_hash=%s WHERE name=%s""", (
-            file_url, 'Home/Attachments', 'Home/Attachments', key, doc.name))
+            file_url, folder, folder, key, doc.name))
         
         doc.file_url = file_url
         
