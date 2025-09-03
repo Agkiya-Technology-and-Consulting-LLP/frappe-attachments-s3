@@ -124,15 +124,16 @@ class S3Operations(object):
                 )
             else:
                 self.S3_CLIENT.upload_file(
-                    file_path, self.BUCKET, key,
+                    file_path,
+                    self.BUCKET,
+                    key,
                     ExtraArgs={
                         "ContentType": content_type,
-                        "ACL": 'public-read',
+                        # "ACL": 'public-read',
                         "Metadata": {
                             "ContentType": content_type,
-
-                        }
-                    }
+                        },
+                    },
                 )
 
         except boto3.exceptions.S3UploadFailedError:
