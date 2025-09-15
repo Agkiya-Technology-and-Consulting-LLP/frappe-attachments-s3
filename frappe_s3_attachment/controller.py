@@ -265,44 +265,48 @@ def generate_file(key=None, file_name=None):
     return
 
 
-def upload_existing_files_s3(name, file_name):
+def upload_existing_files_s3(name):
     """
     Function to upload all existing files.
     """
-    file_doc_name = frappe.db.get_value('File', {'name': name})
+    file_doc_name = frappe.db.get_value("File", {"name": name})
     if file_doc_name:
-        doc = frappe.get_doc('File', name)
+        doc = frappe.get_doc("File", name)
         s3_upload = S3Operations()
         path = doc.file_url
         site_path = frappe.utils.get_site_path()
         parent_doctype = doc.attached_to_doctype
         parent_name = doc.attached_to_name
         if not doc.is_private:
-            file_path = site_path + '/public' + path
+            file_path = site_path + "/public" + path
         else:
             file_path = site_path + path
+
+        # File exists?
+        if not os.path.exists(file_path):
+            return
+
         key = s3_upload.upload_files_to_s3_with_key(
-            file_path, doc.file_name,
-            doc.is_private, parent_doctype,
-            parent_name
+            file_path, doc.file_name, doc.is_private, parent_doctype, parent_name
         )
 
         if doc.is_private:
             method = "frappe_s3_attachment.controller.generate_file"
             file_url = """/api/method/{0}?key={1}""".format(method, key)
         else:
-            file_url = '{}/{}/{}'.format(
-                s3_upload.S3_CLIENT.meta.endpoint_url,
-                s3_upload.BUCKET,
-                key
+            file_url = "{}/{}/{}".format(
+                s3_upload.S3_CLIENT.meta.endpoint_url, s3_upload.BUCKET, key
             )
+
+        # Remove file from local.
         os.remove(file_path)
-        doc = frappe.db.sql("""UPDATE `tabFile` SET file_url=%s, folder=%s,
-            old_parent=%s, content_hash=%s WHERE name=%s""", (
-            file_url, 'Home/Attachments', 'Home/Attachments', key, doc.name))
+
+        frappe.db.sql(
+            """UPDATE `tabFile` SET file_url=%s, folder=%s,
+            old_parent=%s, content_hash=%s WHERE name=%s""",
+            (file_url, "Home/Attachments", "Home/Attachments", key, doc.name),
+        )
         frappe.db.commit()
-    else:
-        pass
 
 
 def s3_file_regex_match(file_url):
@@ -320,15 +324,12 @@ def migrate_existing_files():
     """
     Function to migrate the existing files to s3.
     """
-    # get_all_files_from_public_folder_and_upload_to_s3
-    files_list = frappe.get_all(
-        'File',
-        fields=['name', 'file_url', 'file_name']
-    )
+
+    files_list = frappe.get_all("File", fields=["name", "file_url"])
     for file in files_list:
-        if file['file_url']:
-            if not s3_file_regex_match(file['file_url']):
-                upload_existing_files_s3(file['name'], file['file_name'])
+        if file["file_url"]:
+            if not s3_file_regex_match(file["file_url"]):
+                upload_existing_files_s3(file["name"])
     return True
 
 
