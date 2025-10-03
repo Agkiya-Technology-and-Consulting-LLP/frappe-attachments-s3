@@ -275,7 +275,7 @@ def upload_existing_files_s3(name):
         s3_upload = S3Operations()
         path = doc.file_url
         site_path = frappe.utils.get_site_path()
-        parent_doctype = doc.attached_to_doctype
+        parent_doctype = doc.attached_to_doctype or 'File'
         parent_name = doc.attached_to_name
         if not doc.is_private:
             file_path = site_path + "/public" + path
