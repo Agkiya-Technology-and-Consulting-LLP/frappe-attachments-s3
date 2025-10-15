@@ -31,8 +31,8 @@ doctype_list_js = {
     "S3 Attachment Settings": ["frappe_s3_attachment/doctype/s3_attachment_settings/s3_attachment_settings.js"]
 }
 override_doctype_class = {
-	"File": "frappe_s3_attachment.frappe_s3_attachment.custom.file.CustomFile",
-	"Document": "frappe_s3_attachment.frappe_s3_attachment.custom.file.CustomDocument",
+	# "File": "frappe_s3_attachment.frappe_s3_attachment.custom.file.CustomFile",
+	"Document": "frappe_s3_attachment.frappe_s3_attachment.custom.document.CustomDocument",
 }
 # doctype_tree_js = {"doctype" : "public/js/doctype_tree.js"}
 # doctype_calendar_js = {"doctype" : "public/js/doctype_calendar.js"}
