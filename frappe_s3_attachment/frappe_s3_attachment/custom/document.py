@@ -26,7 +26,7 @@ def custom_copy_attachments_from_amended_from(self):
 				show_pop_up = True
 
 		if show_pop_up:
-			frappe.msgprint("""Note: The attachments from the cancelled document aren't automatically brought forward.<br>
-							If you'd like them to appear here, please link or upload them again.""")
+			frappe.msgprint("""Note: Attachments from the cancelled document are not carried forward automatically.
+								To include them here, please re-upload or link them again.""")
 
 	
